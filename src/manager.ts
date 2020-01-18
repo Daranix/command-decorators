@@ -25,25 +25,25 @@ export class CommandManager {
     public static runCommand(commandName: string, ...args: Array<number | string>) {
         if (CommandManager.commands.has(commandName)) {
             const commandData = CommandManager.commands.get(commandName) as ICommand;
-           commandData.action(...args);
+            commandData.action(...args);
         } else {
             throw new Error("Command not found");
         }
     }
 
     public static registerCommand(commandName: string, command: ICommand) {
-       if(CommandManager.commands.has(commandName)) {
-           throw new Error(`Command ${commandName} is already registered`)
-       }
+        if (CommandManager.commands.has(commandName)) {
+            throw new Error(`Command ${commandName} is already registered`);
+        }
 
-       CommandManager.commands.set(commandName, command);
+        CommandManager.commands.set(commandName, command);
     }
 
     public static registerCategory(categoryName: string, category: ICategory) {
-        if(CommandManager.categories.has(categoryName)) {
-            throw new Error(`Category ${categoryName} is already registered`)
+        if (CommandManager.categories.has(categoryName)) {
+            throw new Error(`Category ${categoryName} is already registered`);
         }
- 
+
         CommandManager.categories.set(categoryName, category);
     }
 }

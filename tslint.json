@@ -7,7 +7,8 @@
     "rules": {
         "no-console": false,
         "interface-name": false,
-        "max-line-length": "140"
+        "max-line-length": false,
+        "array-type": false
     },
     "rulesDirectory": []
 }
