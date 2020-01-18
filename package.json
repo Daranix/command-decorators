@@ -15,6 +15,7 @@
     "tslint": "^5.20.0"
   },
   "dependencies": {
+    "reflect-metadata": "^0.1.13",
     "typescript": "^3.7.5"
   }
 }

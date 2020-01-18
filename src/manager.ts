@@ -31,18 +31,19 @@ export class CommandManager {
         }
     }
 
-    public static registerCommandIntoCategory(categoryName: string, command: ICommand) {
-        if (!CommandManager.categories.has(categoryName)) {
-            throw new Error(`Error when trying to register command: ${command.command} into category: ${categoryName} (Category doesn't exists)`);
+    public static registerCommand(commandName: string, command: ICommand) {
+       if(CommandManager.commands.has(commandName)) {
+           throw new Error(`Command ${commandName} is already registered`)
+       }
+
+       CommandManager.commands.set(commandName, command);
+    }
+
+    public static registerCategory(categoryName: string, category: ICategory) {
+        if(CommandManager.categories.has(categoryName)) {
+            throw new Error(`Category ${categoryName} is already registered`)
         }
-
-        const category: ICategory = CommandManager.categories.get(categoryName) as ICategory;
-        // category.commands.set();
-
-        if (category.commands.has(command.command)) {
-            throw new Error(`Command ${command.command} already exists in category: ${categoryName}`);
-        }
-
-        category.commands.set(command.command, command);
+ 
+        CommandManager.categories.set(categoryName, category);
     }
 }
