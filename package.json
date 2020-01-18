@@ -2,10 +2,13 @@
   "name": "command-decorators",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "start": "ts-node ./src/index.ts",
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc",
+    "lint": "tslint -p tsconfig.json"
   },
   "author": "",
   "license": "ISC",
@@ -15,10 +18,10 @@
     "jest": "^24.9.0",
     "ts-jest": "^24.3.0",
     "ts-node": "^8.4.1",
-    "tslint": "^5.20.0"
+    "tslint": "^5.20.0",
+    "typescript": "^3.7.5"
   },
   "dependencies": {
-    "reflect-metadata": "^0.1.13",
-    "typescript": "^3.7.5"
+    "reflect-metadata": "^0.1.13"
   }
 }

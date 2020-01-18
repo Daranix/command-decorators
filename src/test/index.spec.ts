@@ -9,6 +9,7 @@ describe("Generate basic command and category", () => {
 
     @CommandCategory({ name: TEST_CATEGORY_NAME, description: "TestCategory" })
     class Prueba {
+
         @Command(TEST_COMMAND_NAME)
         public sayHello() { console.log("Command OUTPUT TEST "); }
     }
