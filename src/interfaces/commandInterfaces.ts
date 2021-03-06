@@ -7,9 +7,10 @@ export interface ICommandParameter {
 
 export interface ICommand {
     command: string;
-    description: string;
+    description?: string;
     parameters: ICommandParameter[];
     action: (...args: Array<number | string>) => void;
+    propertyKey: string;
 }
 
 export interface ICategory {
