@@ -1,11 +1,13 @@
 import { CommandManager } from "../manager";
-import { CommandCategory, Command } from "../decorators";
+import { CommandCategory, Command, CmdParam } from "../decorators";
 import { ICategory, ICommand } from "../interfaces";
+import { CmdError } from "../cmderror";
 
 describe("Generate basic command and category", () => {
 
     const TEST_CATEGORY_NAME = "TestCategory";
     const TEST_COMMAND_NAME = "helloWorld";
+    const TEST_COMMAND_WITH_PARAMS = "cmdwithparams";
 
 
     // --- Setup ---
@@ -19,15 +21,26 @@ describe("Generate basic command and category", () => {
             console.log("Context: " + this.testVar);
             console.log("Command OUTPUT TEST ");
         }
+
+        @Command(TEST_COMMAND_WITH_PARAMS)
+        public cmdWithParams(@CmdParam() param: number) {
+            
+        }
     }
 
-    it(`Should try to execute the command but should fail beacuse the class is not registered in the IoC`, () => {
-        const t = () => CommandManager.runCommand(TEST_COMMAND_NAME, ...[]);
-        expect(t).toThrow(Error);
-    })
+    const IOC_ID_TestClass = 'IocTestClass';
+    @CommandCategory({ name: 'IocIntegrationTest', description: "Category for test the integration with IoC contrainers", iocIdentifier: IOC_ID_TestClass})
+    class IocTestClass {
+
+        @Command('IocTest')
+        public sayHello() {
+            console.log('Hello from Ioc Test class');
+        }
+    }
 
     CommandManager.setupCategoryClasses(
-        Prueba
+        Prueba,
+        IocTestClass
     );
 
     it(`Should have a command registered with the name ${TEST_COMMAND_NAME}`, () => {
@@ -60,5 +73,18 @@ describe("Generate basic command and category", () => {
         expect(t).toThrow(Error);
     });
 
+    it(`Should have registered a command with the IoC identifier: ${IOC_ID_TestClass}`, () => {
+        expect(CommandManager.iocContainer.get(IOC_ID_TestClass)).toBeTruthy();
+    });
+
+    it(`Should fail when trying to run command without the required params`, () => {
+        const t = () => CommandManager.runCommand(TEST_COMMAND_WITH_PARAMS, ...[]);
+        expect(t).toThrow(Error);
+    });
+
+    it(`Shoud faiol when run a command with a parameter which can't be parsed as the required type`, () => {
+        const t = () => CommandManager.runCommand(TEST_COMMAND_WITH_PARAMS, ...['potatoe'])
+        expect(t).toThrow(Error);
+    })
 
 });

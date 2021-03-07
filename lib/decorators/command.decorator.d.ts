@@ -1,4 +1,4 @@
 import "reflect-metadata";
-export declare function Command(name: string, commandOpts?: {
+export declare function Command(name: string, commandInfo?: {
     description: string;
-}): (target: any, propertyKey: string, descriptor?: PropertyDescriptor | undefined) => void;
+}): (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;
