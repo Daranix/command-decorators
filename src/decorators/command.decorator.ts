@@ -40,7 +40,7 @@ export function Command(name: string, commandInfo?: { description: string }) {
             parameters: parameters
         };
 
-        const method = descriptor.value;
+        const method = descriptor?.value;
         const validParamTypes = ['boolean', 'string', 'number'];
 
         descriptor.value = function (...args: []) {
@@ -51,9 +51,9 @@ export function Command(name: string, commandInfo?: { description: string }) {
                 const paramName = param?.name;
                 if(!param?.customType) {
                     if (validParamTypes.indexOf(typeof arg) < 0 && param?.required) {
-                        throw new Error('Invalid parameter type on: ' + paramName);
+                        throw new Error(`Invalid parameter type on: ${paramName}`);
                     }
-                    let parsedValue;
+                    let parsedValue: unknown;
                     // eslint-disable-next-line no-useless-catch
                     try {
                         parsedValue = parseToType(arg, paramTypes[i]);
@@ -99,19 +99,19 @@ function parseToType(value: any, expectedType: Function): unknown {
             result = parseInt(value, 10);
             break;
         case Boolean:
-            if(value === "true" || value == "1") {
+            if(value === "true" || value === "1") {
                 result = true;
-            } else if(value === "false" || value == "0") {
+            } else if(value === "false" || value === "0") {
                 result = false;
             } 
             break;
         default:
-            throw new CmdError("Invalid type to parse: " + expectedType.name, { value, expectedType: expectedType.name });
+            throw new CmdError(`Invalid type to parse: ${expectedType.name}`, { value, expectedType: expectedType.name });
     }
 
     const invalidValuesList = [null, Infinity, undefined]; // NaN not included beacuse (NaN === NaN) = false (wp JavaScript types!)
 
-    if(isNaN(result) || invalidValuesList.indexOf(result) >= 1) {
+    if(Number.isNaN(result) || invalidValuesList.indexOf(result) >= 1) {
         throw new CmdError(`Not allowed value: ${value}`, { value, expectedType: expectedType.name });
     }
 
@@ -119,7 +119,7 @@ function parseToType(value: any, expectedType: Function): unknown {
 }
 
 function getFunctionArgumentsNames(func: Function): string[] {
-    return (func + '')
+    return (`${func}`)
           .replace(/[/][/].*$/mg, '') // strip single-line comments
           .replace(/\s+/g, '') // strip white space
           .replace(/[/][*][^/*]*[*][/]/g, '') // strip multi-line comments  

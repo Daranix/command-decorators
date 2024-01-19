@@ -1,7 +1,10 @@
+import 'reflect-metadata'
 import { ICategory, ICommand } from "./interfaces/commandInterfaces";
 import { IoCRegister } from "./interfaces/iocregister";
 import { METADATAKEY } from "./symbols/metadatasymbols";
 import { DefaultIocContainer } from "./utils/defaultioccontainer";
+
+type Constructor<T = {}> = new (...args: any[]) => T;
 
 export class CommandManager {
     public static categories: Map<string, ICategory> = new Map();
@@ -9,13 +12,14 @@ export class CommandManager {
     public static iocContainer: IoCRegister = new DefaultIocContainer();
     public static iocClasses: Array<Object> = [];
 
-    public static runCommand(commandName: string, ...args: Array<number | string>) {
+    public static async runCommand<T>(commandName: string, ...args: Array<number | string>) {
         if (CommandManager.commands.has(commandName)) {
             const commandData = CommandManager.commands.get(commandName) as ICommand;
-            commandData.action(...args);
-        } else {
-            throw new Error("Command not found");
+            return await commandData.action<T>(...args);
         }
+
+        throw new Error("Command not found");
+
     }
 
     public static registerCommand(commandName: string, command: ICommand) {
@@ -34,7 +38,7 @@ export class CommandManager {
         CommandManager.categories.set(categoryName, category);
     }
 
-    public static setupCategoryClasses(...args: Array<new (...args: any[]) => void>) {
+    public static setupCategoryClasses<T extends Constructor[]>(...args: T) {
         for (const arg of args) {
             const categoryData: ICategory = Reflect.getMetadata(METADATAKEY.CATEGORY, arg);
             const iocIdentifier = categoryData.iocIdentifier || arg;
@@ -42,10 +46,11 @@ export class CommandManager {
             CommandManager.iocClasses.push(arg);
             const instance = CommandManager.iocContainer.get<Object>(iocIdentifier);
             CommandManager.registerCategory(categoryData.name, categoryData);
-            categoryData.commands.forEach((commandData: ICommand) => {
+
+            for (const [,commandData] of categoryData.commands) {
                 commandData.action = (instance as any)[commandData.propertyKey];
                 CommandManager.registerCommand(commandData.command, commandData);
-            });
+            }
         }
 
     }

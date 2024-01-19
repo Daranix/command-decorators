@@ -18,7 +18,7 @@ describe("Generate basic command and category", () => {
 
         @Command(TEST_COMMAND_NAME)
         public sayHello() {
-            console.log("Context: " + this.testVar);
+            console.log(`Context: ${this.testVar}`);
             console.log("Command OUTPUT TEST ");
         }
 

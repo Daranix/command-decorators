@@ -12,7 +12,7 @@ export interface ICommand {
     command: string;
     description?: string;
     parameters: ICommandParameter[];
-    action: (...args: Array<number | string>) => void;
+    action: <T>(...args: Array<number | string>) => T | Promise<T>;
     propertyKey: string;
 }
 
