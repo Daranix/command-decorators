@@ -1,9 +1,9 @@
-name: Tag on Main Push
+name: Tag on master Push
 
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   tag_version:
