@@ -1,9 +1,12 @@
 {
   "name": "command-decorators",
   "version": "1.0.0",
-  "description": "",
+  "description": "A simple package to create commands with decorators based",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "jest",
     "test:dev": "jest --watch",
@@ -13,7 +16,7 @@
     "example": "ts-node example/main.ts --watch",
     "tsc": "tsc"
   },
-  "author": "",
+  "author": "Esteban Mayoral",
   "license": "ISC",
   "devDependencies": {
     "@biomejs/biome": "1.5.2",

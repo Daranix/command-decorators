@@ -1,0 +1,39 @@
+name: Tag on Main Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tag_version:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 16
+
+    - name: Get version from package.json
+      id: get_version
+      run: echo "::set-output name=version::$(node -p "require('./package.json').version")"
+
+    - name: Check if tag exists
+      id: check_tag
+      run: |
+        TAG_NAME="v${{ steps.get_version.outputs.version }}"
+        if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+          echo "Tag $TAG_NAME already exists."
+          exit 1
+        fi
+
+    - name: Create and push tag
+      if: steps.check_tag.outcome == 'success'
+      run: |
+        TAG_NAME="v${{ steps.get_version.outputs.version }}"
+        git tag "$TAG_NAME"
+        git push origin "$TAG_NAME"
