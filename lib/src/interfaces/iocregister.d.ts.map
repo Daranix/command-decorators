@@ -1,0 +1,1 @@
+{"version":3,"file":"iocregister.d.ts","sourceRoot":"","sources":["../../../src/interfaces/iocregister.ts"],"names":[],"mappings":"AAEA,MAAM,WAAW,WAAW;IACxB,GAAG,CAAC,CAAC,EAAE,UAAU,EAAE,OAAO,GAAG,CAAC,CAAC;IAC/B,IAAI,CAAC,IAAI,EAAE,KAAK,GAAG,IAAI,EAAE,GAAG,EAAE,KAAK,IAAI,EAAE,UAAU,CAAC,EAAE,OAAO,GAAG,IAAI,CAAC;CACxE"}

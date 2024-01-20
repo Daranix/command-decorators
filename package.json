@@ -2,10 +2,10 @@
   "name": "command-decorators",
   "version": "1.0.0",
   "description": "A simple package to create commands with decorators based",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "lib/src/index.js",
+  "types": "lib/src/index.d.ts",
   "files": [
-    "dist"
+    "lib"
   ],
   "scripts": {
     "test": "jest",
