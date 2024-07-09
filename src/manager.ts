@@ -18,7 +18,7 @@ export class CommandManager {
             return await commandData.action<T>(...args);
         }
 
-        throw new Error("Command not found");
+        throw new Error(`Command ${commandName} not found`);
 
     }
 
@@ -40,7 +40,7 @@ export class CommandManager {
 
     public static setupCategoryClasses<T extends Constructor[]>(...args: T) {
         for (const arg of args) {
-            const categoryData: ICategory = Reflect.getMetadata(METADATAKEY.CATEGORY, arg);
+            const categoryData: ICategory = Reflect.get(arg, METADATAKEY.CATEGORY);
             const iocIdentifier = categoryData.iocIdentifier || arg;
             CommandManager.iocContainer.bind(arg, iocIdentifier);
             CommandManager.iocClasses.push(arg);

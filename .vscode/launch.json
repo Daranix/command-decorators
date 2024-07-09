@@ -1,13 +1,24 @@
 {
-	"configurations": [
-		{
-			"name": "Launch Program",
-			"program": "${workspaceFolder}/app.js",
-			"request": "launch",
-			"skipFiles": [
-				"<node_internals>/**"
-			],
-			"type": "node"
-		}
-	]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Jest Tests",
+            "program": "${workspaceFolder}/node_modules/.bin/jest",
+            "args": [
+                "--watch",
+                "--config",
+                "${workspaceFolder}/jest.config.js"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "windows": {
+                "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+            },
+            "env": {
+                "NODE_ENV": "test"
+            }
+        }
+    ]
 }

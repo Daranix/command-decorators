@@ -1,19 +1,20 @@
-import { ICommand, ICommandParameter } from "../interfaces/commandInterfaces";
+import { ICommand, ICommandParameter, ICommandParameterType } from "../interfaces/commandInterfaces";
 import "reflect-metadata";
 import { METADATAKEY } from "../symbols/metadatasymbols";
 import { CmdError } from "../cmderror";
+import { CommandManager } from "../manager";
+import { getFunctionArgumentsNames } from "../utils/funcs";
 
 // https://gist.github.com/RomkeVdMeulen/e45ee89ce848e7fda140635a4d29892b
 
 export function Command(name: string, commandInfo?: { description: string }) {
-    console.log("Command(): evaluated");
     return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
-        const commandsInsideClass = Reflect.getOwnMetadata(METADATAKEY.COMMAND, target) as Array<ICommand> || [];
-        const parameters: Array<ICommandParameter> = Reflect.getOwnMetadata(METADATAKEY.PARAMETER, target, propertyKey);
+        const commandsInsideClass = Reflect.get(target, METADATAKEY.COMMAND) as Array<ICommand> || [];
+        const parameters: Array<ICommandParameter> = Reflect.getMetadata(METADATAKEY.PARAMETER, target, propertyKey);
 
         const f: Function = target[propertyKey];
         const paramLength = f.length;
-        const paramTypes: Function[] = Reflect.getOwnMetadata("design:paramtypes", target, propertyKey);
+        const paramTypes: ICommandParameterType[] = Reflect.getMetadata("design:paramtypes", target, propertyKey);
         const paramNames = getFunctionArgumentsNames(f);
 
         for (let i = 0; i < paramLength; i++) {
@@ -41,24 +42,24 @@ export function Command(name: string, commandInfo?: { description: string }) {
         };
 
         const method = descriptor?.value;
-        const validParamTypes = ['boolean', 'string', 'number'];
+        const validParamTypes = [Number, Boolean, String];
 
         descriptor.value = function (...args: []) {
             const newArgs = [];
             for (let i = 0; i < paramLength; i++) {
                 const arg = args[i];
-                const param = parameters.find((p) => p.index === i);
+                const param = parameters.find((p) => p.index === i)!;
                 const paramName = param?.name;
                 if(!param?.customType) {
-                    if (validParamTypes.indexOf(typeof arg) < 0 && param?.required) {
-                        throw new Error(`Invalid parameter type on: ${paramName}`);
+                    if (validParamTypes.indexOf(param.type) < 0 && param?.required) {
+                        throw new Error(`Invalid parameter type on: ${paramName} for command ${commandData.command}`);
                     }
                     let parsedValue: unknown;
                     // eslint-disable-next-line no-useless-catch
                     try {
                         parsedValue = parseToType(arg, paramTypes[i]);
                     } catch(ex) {
-                        throw new CmdError(`Failed to parse value for parameter: ${paramName}`, { param, commandData });
+                        throw new CmdError(`Failed to parse value for parameter: ${paramName} for command ${commandData.command}`, { param });
                     }
                     newArgs.push(parsedValue);
                 } else {
@@ -72,7 +73,7 @@ export function Command(name: string, commandInfo?: { description: string }) {
 
         commandsInsideClass.push(commandData);
         // CommandManager.registerCommand(name, commandData);
-        Reflect.defineMetadata(METADATAKEY.COMMAND, commandsInsideClass, target);
+        Reflect.set(target, METADATAKEY.COMMAND, commandsInsideClass);
         // CommandManager.registerCommandIntoCategory(target._categoryId, commandData);
     };
 }
@@ -85,7 +86,7 @@ export function Command(name: string, commandInfo?: { description: string }) {
  * @returns {unknown}
  * @throws {CmdError<unknown>}
  */
-function parseToType(value: any, expectedType: Function): unknown {
+function parseToType(value: any, expectedType: StringConstructor | NumberConstructor | BooleanConstructor): unknown {
 
     if((typeof value) === expectedType.name) {
         return value;
@@ -118,12 +119,3 @@ function parseToType(value: any, expectedType: Function): unknown {
     return result;
 }
 
-function getFunctionArgumentsNames(func: Function): string[] {
-    return (`${func}`)
-          .replace(/[/][/].*$/mg, '') // strip single-line comments
-          .replace(/\s+/g, '') // strip white space
-          .replace(/[/][*][^/*]*[*][/]/g, '') // strip multi-line comments  
-          .split('){', 1)[0].replace(/^[^(]*[(]/, '') // extract the parameters  
-          .replace(/=[^,]+/g, '') // strip any ES6 defaults  
-          .split(',').filter(Boolean); // split & filter [""]
-}

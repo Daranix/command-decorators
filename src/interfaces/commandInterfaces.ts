@@ -1,8 +1,9 @@
+export type ICommandParameterType = NumberConstructor | BooleanConstructor | StringConstructor;
 
 export interface ICommandParameter {
     name?: string;
     description?: string;
-    type: Function;
+    type: ICommandParameterType;
     index: number;
     required?: boolean;
     customType?: boolean;
